@@ -17,9 +17,15 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-	private long mStartTime;
 	private Timer mTimer = null;
 	private Handler mHandler = new Handler();
+	private boolean mIsRunning = false;
+
+	private long mStartTime;
+	private long mStopTime;
+	private long mDelta = 0l;
+	
+	// ウィジェット
 	private TextView mTextView;
 	private Button mStartButton;
 	private Button mStopButton;
@@ -47,7 +53,14 @@ public class MainActivity extends Activity {
 	
 	public void startTimer(View v){
 		// start時の時刻を取得 -> startTime
-		mStartTime = SystemClock.elapsedRealtime(); // デバイスが起動してからの経過ミリ秒 (※System.currentTimeMillis … 現在時刻)
+		if(!mIsRunning){
+			mStartTime = SystemClock.elapsedRealtime(); // デバイスが起動してからの経過ミリ秒 (※System.currentTimeMillis … 現在時刻)
+			mIsRunning = true;
+		}
+		else{
+			mDelta += SystemClock.elapsedRealtime() - mStopTime;
+			//mStartTime = SystemClock.elapsedRealtime() 
+		}
 		
 		// 一定時間毎に現在時刻を取得してstartTimeとの差分を表示
 		/*
@@ -64,7 +77,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void run() {
 						SimpleDateFormat f = new SimpleDateFormat("mm:ss.SSS");
-						String s = f.format(new Date(SystemClock.elapsedRealtime() - mStartTime));
+						String s = f.format(new Date(SystemClock.elapsedRealtime() - mStartTime - mDelta));
 						mTextView.setText(s);
 					}
 				});
@@ -75,11 +88,20 @@ public class MainActivity extends Activity {
 		// ボタンの有効無効化
 		setButtonStates(false, true, false);		
 	}
+	
+	// Stop button
 	public void stopTimer(View v){
-		
+		mStopTime = SystemClock.elapsedRealtime();
+		mTimer.cancel(); // Timerのインスタンスは破棄される
+		setButtonStates(true, false, true);
 	}
+	
+	// Reset button
 	public void resetTimer(View v){
-		
+		mIsRunning = false;
+		mDelta = 0l;
+		mTextView.setText("00:00.000");
+		setButtonStates(true, false, false);
 	}
 
 	@Override
