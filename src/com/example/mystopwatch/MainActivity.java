@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -20,6 +21,9 @@ public class MainActivity extends Activity {
 	private Timer mTimer = null;
 	private Handler mHandler = new Handler();
 	private TextView mTextView;
+	private Button mStartButton;
+	private Button mStopButton;
+	private Button mResetButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,18 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		mTextView = (TextView)findViewById(R.id.textView1);
+		mStartButton = (Button)findViewById(R.id.buttonStart);
+		mStopButton = (Button)findViewById(R.id.buttonStop);
+		mResetButton = (Button)findViewById(R.id.buttonReset);
+		
+		setButtonStates(true, false, false);
+	}
+	
+	// ボタンの有効無効化
+	private void setButtonStates(boolean start, boolean stop, boolean reset){
+		mStartButton.setEnabled(start);
+		mStopButton.setEnabled(stop);
+		mResetButton.setEnabled(reset);
 	}
 	
 	public void startTimer(View v){
@@ -57,7 +73,7 @@ public class MainActivity extends Activity {
 					// ※scheduleAtFixedRate: 前回のタスクの完了時間に関わらず一定の周期で実行。 
 		
 		// ボタンの有効無効化
-		
+		setButtonStates(false, true, false);		
 	}
 	public void stopTimer(View v){
 		
